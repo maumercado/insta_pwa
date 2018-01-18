@@ -1,6 +1,8 @@
 
 # Created by https://www.gitignore.io/api/macos,reactnative,visualstudiocode
 
+pwagram-key.json
+
 ### macOS ###
 *.DS_Store
 .AppleDouble
