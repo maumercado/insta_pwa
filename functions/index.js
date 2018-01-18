@@ -4,12 +4,12 @@ var cors = require("cors")({ origin: true });
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 
-// var serviceAccount = require("./pwagram-fb-key.json");
+var serviceAccount = require("./pwagram-key.json");
 
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//     databaseURL: "https://pwagram-2d466.firebaseio.com/"
-// });
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://pwagram-2d466.firebaseio.com/"
+});
 
 exports.storePostData = functions.https.onRequest(function(request, response) {
     cors(request, response, function() {
