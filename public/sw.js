@@ -1,7 +1,7 @@
 importScripts("/src/js/idb.js");
 importScripts("/src/js/utility.js");
 
-var CACHE_STATIC_NAME = "static-v22";
+var CACHE_STATIC_NAME = "static-v24";
 var CACHE_DYNAMIC_NAME = "dynamic-v2";
 var STATIC_FILES = [
     "/",
@@ -80,7 +80,7 @@ function isInArray(string, array) {
 }
 
 self.addEventListener("fetch", function(event) {
-    var url = "https://pwagram-99adf.firebaseio.com/posts";
+    var url = "https://pwagram-2d466.firebaseio.com/posts.json";
     if (event.request.url.indexOf(url) > -1) {
         event.respondWith(
             fetch(event.request).then(function(res) {
@@ -189,3 +189,44 @@ self.addEventListener("fetch", function(event) {
 //     fetch(event.request)
 //   );
 // });
+
+self.addEventListener("sync", function(event) {
+    console.log("[Service Worker] Background syncing", event);
+    if (event.tag === "sync-new-posts") {
+        console.log("[Service Worker] Syncing new Posts");
+        event.waitUntil(
+            readAllData("sync-posts").then(function(data) {
+                for (var dt of data) {
+                    fetch("https://pwagram-2d466.firebaseio.com/posts.json", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Accept: "application/json"
+                        },
+                        body: JSON.stringify({
+                            id: dt.id,
+                            title: dt.title,
+                            location: dt.location,
+                            image:
+                                "https://firebasestorage.googleapis.com/v0/b/pwagram-2d466.appspot.com/o/sf-boat.jpg?alt=media&token=9a858274-d8fb-4301-8fde-72e2bc82a1b0"
+                        })
+                    })
+                        .then(function(res) {
+                            console.log("Sent data", res);
+                            if (res.ok) {
+                                res.json().then(function(resData) {
+                                    deleteItemFromData(
+                                        "sync-posts",
+                                        resData.id
+                                    );
+                                });
+                            }
+                        })
+                        .catch(function(err) {
+                            console.log("Error while sending data", err);
+                        });
+                }
+            })
+        );
+    }
+});
