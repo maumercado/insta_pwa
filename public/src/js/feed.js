@@ -125,20 +125,23 @@ if ("indexedDB" in window) {
 }
 
 function sendData() {
-    fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-        },
-        body: JSON.stringify({
-            id: new Date().toISOString(),
-            title: titleInput.value,
-            location: locationInput.value,
-            image:
-                "https://firebasestorage.googleapis.com/v0/b/pwagram-2d466.appspot.com/o/sf-boat.jpg?alt=media&token=9a858274-d8fb-4301-8fde-72e2bc82a1b0"
-        })
-    }).then(function(res) {
+    fetch(
+        "https://us-central1-pwagram-2d466.cloudfunctions.net/storePostData",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json"
+            },
+            body: JSON.stringify({
+                id: new Date().toISOString(),
+                title: titleInput.value,
+                location: locationInput.value,
+                image:
+                    "https://firebasestorage.googleapis.com/v0/b/pwagram-2d466.appspot.com/o/sf-boat.jpg?alt=media&token=9a858274-d8fb-4301-8fde-72e2bc82a1b0"
+            })
+        }
+    ).then(function(res) {
         console.log("Sent data", res);
         updateUI();
     });

@@ -197,20 +197,23 @@ self.addEventListener("sync", function(event) {
         event.waitUntil(
             readAllData("sync-posts").then(function(data) {
                 for (var dt of data) {
-                    fetch("https://pwagram-2d466.firebaseio.com/posts.json", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Accept: "application/json"
-                        },
-                        body: JSON.stringify({
-                            id: dt.id,
-                            title: dt.title,
-                            location: dt.location,
-                            image:
-                                "https://firebasestorage.googleapis.com/v0/b/pwagram-2d466.appspot.com/o/sf-boat.jpg?alt=media&token=9a858274-d8fb-4301-8fde-72e2bc82a1b0"
-                        })
-                    })
+                    fetch(
+                        "https://us-central1-pwagram-2d466.cloudfunctions.net/storePostData",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Accept: "application/json"
+                            },
+                            body: JSON.stringify({
+                                id: dt.id,
+                                title: dt.title,
+                                location: dt.location,
+                                image:
+                                    "https://firebasestorage.googleapis.com/v0/b/pwagram-2d466.appspot.com/o/sf-boat.jpg?alt=media&token=9a858274-d8fb-4301-8fde-72e2bc82a1b0"
+                            })
+                        }
+                    )
                         .then(function(res) {
                             console.log("Sent data", res);
                             if (res.ok) {
