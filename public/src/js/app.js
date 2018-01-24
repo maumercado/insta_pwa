@@ -50,12 +50,57 @@ function displayConfirmationNotification() {
             ]
         };
         navigator.serviceWorker.ready.then(function(swreg) {
-            swreg.showNotification(
-                "Successfully subscribed (from SW)!",
-                options
-            );
+            swreg.showNotification("Successfully subscribed!", options);
         });
     }
+}
+
+function configurePushSub() {
+    if (!("serviceWorker" in navigator)) {
+        return;
+    }
+
+    var reg;
+    navigator.serviceWorker.ready
+        .then(function(swreg) {
+            reg = swreg;
+            return swreg.pushManager.getSubscription(); // Subscription of this browser on this device, this account.
+        })
+        .then(function(sub) {
+            if (sub === null) {
+                var vapidPublicKey =
+                    "BB3NdO1ImBYAQ-G1M4hcy_qIZ6N-VNS-MS7DoNQVCAN_FrZDx6LVcIOshlI09lZmWGuNvQrQ4JlPy44ve_i0lXI";
+                var convertedVapidPublicKey = urlBase64ToUint8Array(
+                    vapidPublicKey
+                );
+                return reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: convertedVapidPublicKey
+                });
+            } else {
+            }
+        })
+        .then(function(newSub) {
+            return fetch(
+                "https://pwagram-2d466.firebaseio.com/subscriptions.json",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json"
+                    },
+                    body: JSON.stringify(newSub)
+                }
+            );
+        })
+        .then(function(res) {
+            if (res.ok) {
+                displayConfirmationNotification();
+            }
+        })
+        .catch(function(err) {
+            console.error(err);
+        });
 }
 
 function askForNotificationPermission() {
@@ -64,12 +109,12 @@ function askForNotificationPermission() {
         if (result !== "granted") {
             console.log("No notification permission granted!");
         } else {
-            displayConfirmationNotification();
+            configurePushSub();
         }
     });
 }
 
-if ("Notification" in window) {
+if ("Notification" in window && "serviceWorker" in navigator) {
     for (var i = 0; i < enableNotificationsButtons.length; i++) {
         enableNotificationsButtons[i].style.display = "inline-block";
         enableNotificationsButtons[i].addEventListener(
