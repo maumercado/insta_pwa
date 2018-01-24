@@ -191,21 +191,17 @@ if ("indexedDB" in window) {
 }
 
 function sendData() {
+    var id = new Date().toString();
+    var postData = new FormData();
+    postData.append("id", id);
+    postData.append("title", titleInput.value);
+    postData.append("location", locationInput.value);
+    postData.append("file", picture, id + ".png");
     fetch(
         "https://us-central1-pwagram-2d466.cloudfunctions.net/storePostData",
         {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json"
-            },
-            body: JSON.stringify({
-                id: new Date().toISOString(),
-                title: titleInput.value,
-                location: locationInput.value,
-                image:
-                    "https://firebasestorage.googleapis.com/v0/b/pwagram-2d466.appspot.com/o/sf-boat.jpg?alt=media&token=9a858274-d8fb-4301-8fde-72e2bc82a1b0"
-            })
+            body: postData
         }
     ).then(function(res) {
         console.log("Sent data", res);
@@ -228,7 +224,8 @@ form.addEventListener("submit", function(event) {
             var post = {
                 id: new Date().toISOString(),
                 title: titleInput.value,
-                location: locationInput.value
+                location: locationInput.value,
+                picture: picture
             };
             writeData("sync-posts", post)
                 .then(function() {
