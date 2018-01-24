@@ -14,6 +14,8 @@ var captureButton = document.querySelector("#capture-btn");
 var imagePicker = document.querySelector("#image-picker");
 var imagePickerArea = document.querySelector("#pick-image");
 
+var picture;
+
 function initializeMedia() {
     if (!("mediaDevices" in navigator)) {
         navigator.mediaDevices = {};
@@ -46,6 +48,27 @@ function initializeMedia() {
             imagePickerArea.style.display = "block";
         });
 }
+
+captureButton.addEventListener("click", function(event) {
+    canvasElement.style.display = "block";
+    videoPlayer.style.display = "none";
+    captureButton.style.display = "none";
+
+    var context = canvasElement.getContext("2d");
+
+    context.drawImage(
+        videoPlayer,
+        0,
+        0,
+        canvas.width,
+        videoPlayer.videoHeight / (videoPlayer.videoWidth / canvas.width)
+    );
+
+    videoPlayer.srcObject.getVideoTracks().forEach(function(track) {
+        track.stop();
+    });
+    picture = dataURItoBlob(canvasElement.toDataURL());
+});
 
 function openCreatePostModal() {
     // createPostArea.style.display = 'block';
