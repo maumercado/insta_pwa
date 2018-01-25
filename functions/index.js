@@ -7,10 +7,13 @@ var UUID = require("uuid-v4");
 var os = require("os");
 var Busboy = require("busboy");
 var path = require("path");
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
+//
 
 var serviceAccount = require("./pwagram-key.json");
+
 var gcconfig = {
     projectId: "pwagram-2d466",
     keyFilename: "pwagram-key.json"
@@ -37,7 +40,6 @@ exports.storePostData = functions.https.onRequest(function(request, response) {
             console.log(
                 `File [${fieldname}] filename: ${filename}, encoding: ${encoding}, mimetype: ${mimetype}`
             );
-
             const filepath = path.join(os.tmpdir(), filename);
             upload = { file: filepath, type: mimetype };
             file.pipe(fs.createWriteStream(filepath));
@@ -55,8 +57,9 @@ exports.storePostData = functions.https.onRequest(function(request, response) {
             fields[fieldname] = val;
         });
 
+        // This callback will be invoked after all uploaded files are saved.
         busboy.on("finish", () => {
-            var bucket = gcs.bucket("YOUR_PROJECT_ID.appspot.com");
+            var bucket = gcs.bucket("pwagram-2d466.appspot.com");
             bucket.upload(
                 upload.file,
                 {
@@ -69,64 +72,70 @@ exports.storePostData = functions.https.onRequest(function(request, response) {
                     }
                 },
                 function(err, uploadedFile) {
-                    if (err) {
-                        console.error(err);
+                    if (!err) {
+                        admin
+                            .database()
+                            .ref("posts")
+                            .push({
+                                title: fields.title,
+                                location: fields.location,
+                                rawLocation: {
+                                    lat: fields.rawLocationLat,
+                                    lng: fields.rawLocationLng
+                                },
+                                image:
+                                    "https://firebasestorage.googleapis.com/v0/b/" +
+                                    bucket.name +
+                                    "/o/" +
+                                    encodeURIComponent(uploadedFile.name) +
+                                    "?alt=media&token=" +
+                                    uuid
+                            })
+                            .then(function() {
+                                webpush.setVapidDetails(
+                                    "mailto: info@maumercado.com",
+                                    "BB3NdO1ImBYAQ-G1M4hcy_qIZ6N-VNS-MS7DoNQVCAN_FrZDx6LVcIOshlI09lZmWGuNvQrQ4JlPy44ve_i0lXI",
+                                    "LFR9XVUtKJ6HhF42p5Yt1jvUUCF60qea93NiT78uquM"
+                                );
+                                return admin
+                                    .database()
+                                    .ref("subscriptions")
+                                    .once("value");
+                            })
+                            .then(function(subscriptions) {
+                                subscriptions.forEach(function(sub) {
+                                    var pushConfig = {
+                                        endpoint: sub.val().endpoint,
+                                        keys: {
+                                            auth: sub.val().keys.auth,
+                                            p256dh: sub.val().keys.p256dh
+                                        }
+                                    };
+
+                                    webpush
+                                        .sendNotification(
+                                            pushConfig,
+                                            JSON.stringify({
+                                                title: "New Post",
+                                                content: "New Post added!",
+                                                openUrl: "/help"
+                                            })
+                                        )
+                                        .catch(function(err) {
+                                            console.log(err);
+                                        });
+                                });
+                                response.status(201).json({
+                                    message: "Data stored",
+                                    id: fields.id
+                                });
+                            })
+                            .catch(function(err) {
+                                response.status(500).json({ error: err });
+                            });
+                    } else {
+                        console.log(err);
                     }
-                    admin
-                        .database()
-                        .ref("posts")
-                        .push({
-                            id: fields.id,
-                            title: fields.title,
-                            location: fields.location,
-                            image:
-                                "https://firebasestorage.googleapis.com/v0/b/" +
-                                bucket.name +
-                                "/o/" +
-                                encodeURIComponent(file.name) +
-                                "?alt=media&token=" +
-                                uuid
-                        })
-                        .then(function() {
-                            webpush.setVapidDetails(
-                                "mailto: info@maumercado.com",
-                                "BB3NdO1ImBYAQ-G1M4hcy_qIZ6N-VNS-MS7DoNQVCAN_FrZDx6LVcIOshlI09lZmWGuNvQrQ4JlPy44ve_i0lXI",
-                                "LFR9XVUtKJ6HhF42p5Yt1jvUUCF60qea93NiT78uquM"
-                            );
-                            return admin.database
-                                .ref("subscription")
-                                .once("value");
-                        })
-                        .then(function(subscriptions) {
-                            subscriptions.forEach(function(sub) {
-                                var pushConfig = {
-                                    endpoint: sub.val().endpoint,
-                                    keys: {
-                                        auth: sub.val().keys.auth,
-                                        p256df: sub.val().keys.p256dh
-                                    }
-                                };
-                                webpush
-                                    .sendNotification(
-                                        pushConfig,
-                                        JSON.stringify({
-                                            title: "New Post",
-                                            content: "New Post added!",
-                                            openUrl: "/help"
-                                        })
-                                    )
-                                    .catch(function(err) {
-                                        console.error(err);
-                                    });
-                            });
-                            response.status(201).json({
-                                message: "Data stored",
-                                id: fields.id
-                            });
-                        })
-                        .catch(function(err) {
-                            response.status(500).json({ error: err });
-                        });
                 }
             );
         });

@@ -2,6 +2,7 @@ var deferredPrompt;
 var enableNotificationsButtons = document.querySelectorAll(
     ".enable-notifications"
 );
+
 if (!window.Promise) {
     window.Promise = Promise;
 }
@@ -24,18 +25,18 @@ window.addEventListener("beforeinstallprompt", function(event) {
     return false;
 });
 
-function displayConfirmationNotification() {
+function displayConfirmNotification() {
     if ("serviceWorker" in navigator) {
         var options = {
             body: "You successfully subscribed to our Notification service!",
             icon: "/src/images/icons/app-icon-96x96.png",
             image: "/src/images/sf-boat.jpg",
             dir: "ltr",
-            lang: "en-US", // BCP 47
+            lang: "en-US", // BCP 47,
             vibrate: [100, 50, 200],
             badge: "/src/images/icons/app-icon-96x96.png",
-            tag: "confirm-notification", // same tags are grouped in devices
-            renotify: false, // same tags will not notify user
+            tag: "confirm-notification",
+            renotify: true,
             actions: [
                 {
                     action: "confirm",
@@ -49,6 +50,7 @@ function displayConfirmationNotification() {
                 }
             ]
         };
+
         navigator.serviceWorker.ready.then(function(swreg) {
             swreg.showNotification("Successfully subscribed!", options);
         });
@@ -64,10 +66,11 @@ function configurePushSub() {
     navigator.serviceWorker.ready
         .then(function(swreg) {
             reg = swreg;
-            return swreg.pushManager.getSubscription(); // Subscription of this browser on this device, this account.
+            return swreg.pushManager.getSubscription();
         })
         .then(function(sub) {
             if (sub === null) {
+                // Create a new subscription
                 var vapidPublicKey =
                     "BB3NdO1ImBYAQ-G1M4hcy_qIZ6N-VNS-MS7DoNQVCAN_FrZDx6LVcIOshlI09lZmWGuNvQrQ4JlPy44ve_i0lXI";
                 var convertedVapidPublicKey = urlBase64ToUint8Array(
@@ -78,6 +81,7 @@ function configurePushSub() {
                     applicationServerKey: convertedVapidPublicKey
                 });
             } else {
+                // We have a subscription
             }
         })
         .then(function(newSub) {
@@ -95,11 +99,11 @@ function configurePushSub() {
         })
         .then(function(res) {
             if (res.ok) {
-                displayConfirmationNotification();
+                displayConfirmNotification();
             }
         })
         .catch(function(err) {
-            console.error(err);
+            console.log(err);
         });
 }
 
@@ -110,6 +114,7 @@ function askForNotificationPermission() {
             console.log("No notification permission granted!");
         } else {
             configurePushSub();
+            // displayConfirmNotification();
         }
     });
 }

@@ -1,13 +1,14 @@
 importScripts("/src/js/idb.js");
 importScripts("/src/js/utility.js");
 
-var CACHE_STATIC_NAME = "static-v29";
-var CACHE_DYNAMIC_NAME = "dynamic-v2";
+var CACHE_STATIC_NAME = "static-v40";
+var CACHE_DYNAMIC_NAME = "dynamic-v3";
 var STATIC_FILES = [
     "/",
     "/index.html",
     "/offline.html",
     "/src/js/app.js",
+    "/src/js/utility.js",
     "/src/js/feed.js",
     "/src/js/idb.js",
     "/src/js/promise.js",
@@ -80,7 +81,7 @@ function isInArray(string, array) {
 }
 
 self.addEventListener("fetch", function(event) {
-    var url = "https://pwagram-2d466.firebaseio.com/posts.json";
+    var url = "https://pwagram-2d466.firebaseio.com/posts";
     if (event.request.url.indexOf(url) > -1) {
         event.respondWith(
             fetch(event.request).then(function(res) {
@@ -201,6 +202,8 @@ self.addEventListener("sync", function(event) {
                     postData.append("id", dt.id);
                     postData.append("title", dt.title);
                     postData.append("location", dt.location);
+                    postData.append("rawLocationLat", dt.rawLocation.lat);
+                    postData.append("rawLocationLng", dt.rawLocation.lng);
                     postData.append("file", dt.picture, dt.id + ".png");
 
                     fetch(
@@ -260,17 +263,18 @@ self.addEventListener("notificationclick", function(event) {
 });
 
 self.addEventListener("notificationclose", function(event) {
-    console.log("Notification was close", event);
+    console.log("Notification was closed", event);
 });
 
 self.addEventListener("push", function(event) {
-    console.log("Push notification received", event);
+    console.log("Push Notification received", event);
 
     var data = {
         title: "New!",
         content: "Something new happened!",
         openUrl: "/"
     };
+
     if (event.data) {
         data = JSON.parse(event.data.text());
     }
