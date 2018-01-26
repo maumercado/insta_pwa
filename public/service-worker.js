@@ -1,4 +1,4 @@
-importScripts("workbox-sw.prod.v2.0.0.js");
+importScripts("workbox-sw.prod.v2.1.2.js");
 importScripts("/src/js/idb.js");
 importScripts("/src/js/utility.js");
 
@@ -80,80 +80,32 @@ workboxSW.router.registerRoute(
 
 workboxSW.precache([
   {
-    "url": "404.html",
-    "revision": "0a27a4163254fc8fce870c8cc3a3f94f"
-  },
-  {
     "url": "favicon.ico",
     "revision": "2cab47d9e04d664d93c8d91aec59e812"
   },
   {
     "url": "index.html",
-    "revision": "70489d0c7134bd926519ab981aac2afd"
+    "revision": "640265c093cc28cbc8b978aee2e3323c"
   },
   {
     "url": "manifest.json",
-    "revision": "d11c7965f5cfba711c8e74afa6c703d7"
+    "revision": "de5f9ec6dd0fee96db921f4fb1d5588b"
   },
   {
     "url": "offline.html",
     "revision": "45352e71a80a5c75d25e226e7330871b"
   },
   {
-    "url": "service-worker.js",
-    "revision": "19ac10c4b6f49a01fa24bcd3b506fdaf"
-  },
-  {
     "url": "src/css/app.css",
-    "revision": "f27b4d5a6a99f7b6ed6d06f6583b73fa"
+    "revision": "07aa7be9cd7150d9a5e69a77338d4d8a"
   },
   {
     "url": "src/css/feed.css",
-    "revision": "edb6851fd7f76aec67d4ca36a09b166d"
+    "revision": "fed0b69be8bea8a7e976ba5f4ae53d6d"
   },
   {
     "url": "src/css/help.css",
-    "revision": "1c6d81b27c9d423bece9869b07a7bd73"
-  },
-  {
-    "url": "src/js/app.js",
-    "revision": "0ebc3428440264af3d11c44c71194a64"
-  },
-  {
-    "url": "src/js/feed.js",
-    "revision": "5296fab0a9b73d3285bb8262e6fe353d"
-  },
-  {
-    "url": "src/js/fetch.js",
-    "revision": "766eb78e36b0ee73ef54ad362b1225e9"
-  },
-  {
-    "url": "src/js/idb.js",
-    "revision": "017ced36d82bea1e08b08393361e354d"
-  },
-  {
-    "url": "src/js/material.min.js",
-    "revision": "713af0c6ce93dbbce2f00bf0a98d0541"
-  },
-  {
-    "url": "src/js/promise.js",
-    "revision": "10c2238dcd105eb23f703ee53067417f"
-  },
-  {
-    "url": "src/js/utility.js",
-    "revision": "0d6c62534e37fe2cc0a9599690ed33e8"
-  },
-  {
-    "url": "sw-base.js",
-    "revision": "0f4e2a5f4787159f8428646489be6e90"
-  },
-  {
-    "url": "sw.js",
-    "revision": "06c1a2437c41a0bd7b93a0b89b4c70a5"
-  },
-  {
-    "url": "workbox-sw.prod.v2.1.2.js",
-    "revision": "685d1ceb6b9a9f94aacf71d6aeef8b51"
+    "revision": "f7fc36c7bfd7e75a0ae466e0166a2fb8"
   },
   {
     "url": "src/images/main-image-lg.jpg",
@@ -170,6 +122,34 @@ workboxSW.precache([
   {
     "url": "src/images/sf-boat.jpg",
     "revision": "0f282d64b0fb306daf12050e812d6a19"
+  },
+  {
+    "url": "src/js/app.min.js",
+    "revision": "bebcdafb9f8e6524d18d4a50d7176a3b"
+  },
+  {
+    "url": "src/js/feed.min.js",
+    "revision": "bbbd6ca09fd311bc627cc9dd2065f55e"
+  },
+  {
+    "url": "src/js/fetch.min.js",
+    "revision": "32590119a06bf9ade8026dd12baa695e"
+  },
+  {
+    "url": "src/js/idb.min.js",
+    "revision": "ea82c8cec7e6574ed535bee7878216e0"
+  },
+  {
+    "url": "src/js/material.min.js",
+    "revision": "713af0c6ce93dbbce2f00bf0a98d0541"
+  },
+  {
+    "url": "src/js/promise.min.js",
+    "revision": "ed8fa9e786ad3f5c96b5d2b3d80ba0de"
+  },
+  {
+    "url": "src/js/utility.min.js",
+    "revision": "4495aae9ab6b9b7cd0d42431c4175f0a"
   }
 ]);
 
