@@ -17,6 +17,6 @@
     "devDependencies": {
         "http-server": "^0.10.0",
         "uglify-js": "^3.3.8",
-        "workbox-cli": "^2.1.2"
+        "workbox-cli": "^5.1.4"
     }
 }
